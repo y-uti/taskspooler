@@ -89,8 +89,9 @@ static char * print_noresult(const struct Job *p)
     const char * output_filename;
     int maxlen;
     char * line;
-    /* 18 chars should suffice for a string like "[int]&& " */
-    char dependstr[18] = "";
+    char dependstr[MAX_DEPEND_ON_SIZE * 14 + 4] = "";
+    int ofs;
+    int i;
 
     jobstate = jstate2string(p->state);
     output_filename = ofilename_shown(p);
@@ -103,10 +104,13 @@ static char * print_noresult(const struct Job *p)
     if (p->do_depend)
     {
         maxlen += sizeof(dependstr);
-        if (p->depend_on == -1)
-            snprintf(dependstr, sizeof(dependstr), "&& ");
-        else
-            snprintf(dependstr, sizeof(dependstr), "[%i]&& ", p->depend_on);
+        ofs = 0;
+        for (i = 0; i < p->depend_on_size; i++)
+        {
+            snprintf(dependstr + ofs, sizeof(dependstr) - ofs, "%s%d", i == 0 ? "[" : ",", p->depend_on[i]);
+            ofs = strlen(dependstr);
+        }
+        snprintf(dependstr + ofs, sizeof(dependstr) - ofs, "]&& ");
     }
 
     line = (char *) malloc(maxlen);
@@ -142,8 +146,9 @@ static char * print_result(const struct Job *p)
     int maxlen;
     char * line;
     const char * output_filename;
-    /* 18 chars should suffice for a string like "[int]&& " */
-    char dependstr[18] = "";
+    char dependstr[MAX_DEPEND_ON_SIZE * 14 + 4] = "";
+    int ofs;
+    int i;
 
     jobstate = jstate2string(p->state);
     output_filename = ofilename_shown(p);
@@ -156,10 +161,13 @@ static char * print_result(const struct Job *p)
     if (p->do_depend)
     {
         maxlen += sizeof(dependstr);
-        if (p->depend_on == -1)
-            snprintf(dependstr, sizeof(dependstr), "&& ");
-        else
-            snprintf(dependstr, sizeof(dependstr), "[%i]&& ", p->depend_on);
+        ofs = 0;
+        for (i = 0; i < p->depend_on_size; i++)
+        {
+            snprintf(dependstr + ofs, sizeof(dependstr) - ofs, "%s%d", i == 0 ? "[" : ",", p->depend_on[i]);
+            ofs = strlen(dependstr);
+        }
+        snprintf(dependstr + ofs, sizeof(dependstr) - ofs, "]&& ");
     }
 
     line = (char *) malloc(maxlen);

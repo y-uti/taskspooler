@@ -25,7 +25,7 @@ char *build_command_string()
     int num;
     char **array;
     char *commandstring;
-    
+
     size = 0;
     num = command_line.command.num;
     array = command_line.command.array;
@@ -59,6 +59,7 @@ void c_new_job()
     struct msg m;
     char *new_command;
     char *myenv;
+    int i;
 
     m.type = NEWJOB;
 
@@ -78,7 +79,11 @@ void c_new_job()
         m.u.newjob.label_size = 0;
     m.u.newjob.store_output = command_line.store_output;
     m.u.newjob.do_depend = command_line.do_depend;
-    m.u.newjob.depend_on = command_line.depend_on;
+    m.u.newjob.depend_on_size = command_line.depend_on_size;
+    for (i = 0; i < command_line.depend_on_size; i++)
+    {
+        m.u.newjob.depend_on[i] = command_line.depend_on[i];
+    }
     m.u.newjob.should_keep_finished = command_line.should_keep_finished;
     m.u.newjob.command_size = strlen(new_command) + 1; /* add null */
     m.u.newjob.wait_enqueuing = command_line.wait_enqueuing;
@@ -350,7 +355,7 @@ static char * get_output_file(int *pid)
         res = recv_bytes(server_socket, string, m.u.size);
         if(res != m.u.size)
             error("Error in get_output_file line size");
-        fprintf(stderr, "Error in the request: %s", 
+        fprintf(stderr, "Error in the request: %s",
                 string);
         exit(-1);
         /* WILL NOT GO FURTHER */
@@ -454,7 +459,7 @@ void c_remove_job()
     case LIST_LINE: /* Only ONE line accepted */
         string = (char *) malloc(m.u.size);
         res = recv_bytes(server_socket, string, m.u.size);
-        fprintf(stderr, "Error in the request: %s", 
+        fprintf(stderr, "Error in the request: %s",
                 string);
         exit(-1);
         /* WILL NOT GO FURTHER */
@@ -484,7 +489,7 @@ int c_wait_job_recv()
         res = recv_bytes(server_socket, string, m.u.size);
         if(res != m.u.size)
             error("Error in wait_job - line size");
-        fprintf(stderr, "Error in the request: %s", 
+        fprintf(stderr, "Error in the request: %s",
                 string);
         exit(-1);
         /* WILL NOT GO FURTHER */
@@ -588,7 +593,7 @@ void c_move_urgent()
         res = recv_bytes(server_socket, string, m.u.size);
         if(res != m.u.size)
             error("Error in move_urgent - line size");
-        fprintf(stderr, "Error in the request: %s", 
+        fprintf(stderr, "Error in the request: %s",
                 string);
         exit(-1);
         /* WILL NOT GO FURTHER */
@@ -625,7 +630,7 @@ void c_get_state()
         res = recv_bytes(server_socket, string, m.u.size);
         if(res != m.u.size)
             error("Error in get_state - line size");
-        fprintf(stderr, "Error in the request: %s", 
+        fprintf(stderr, "Error in the request: %s",
                 string);
         exit(-1);
         /* WILL NOT GO FURTHER */
@@ -662,7 +667,7 @@ void c_swap_jobs()
         res = recv_bytes(server_socket, string, m.u.size);
         if(res != m.u.size)
             error("Error in swap_jobs - line size");
-        fprintf(stderr, "Error in the request: %s", 
+        fprintf(stderr, "Error in the request: %s",
                 string);
         exit(-1);
         /* WILL NOT GO FURTHER */

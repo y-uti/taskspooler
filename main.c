@@ -40,7 +40,7 @@ static void default_command_line()
     command_line.send_output_by_mail = 0;
     command_line.label = 0;
     command_line.do_depend = 0;
-    command_line.depend_on = -1; /* -1 means depend on previous */
+    command_line.depend_on_size = 0;
     command_line.max_slots = 1;
     command_line.wait_enqueuing = 1;
     command_line.stderr_apart = 0;
@@ -107,7 +107,12 @@ void parse_opts(int argc, char **argv)
                 break;
             case 'd':
                 command_line.do_depend = 1;
-                command_line.depend_on = -1;
+                if (command_line.depend_on_size == MAX_DEPEND_ON_SIZE)
+                {
+                    fprintf(stderr, "Exceeds depend on buffer size (%d).\n", MAX_DEPEND_ON_SIZE);
+                    exit(-1);
+                }
+                command_line.depend_on[command_line.depend_on_size++] = -1;
                 break;
             case 'V':
                 command_line.request = c_SHOW_VERSION;
@@ -182,7 +187,12 @@ void parse_opts(int argc, char **argv)
                 break;
             case 'D':
                 command_line.do_depend = 1;
-                command_line.depend_on = atoi(optarg);
+                if (command_line.depend_on_size == MAX_DEPEND_ON_SIZE)
+                {
+                    fprintf(stderr, "Exceeds depend on buffer size (%d).\n", MAX_DEPEND_ON_SIZE);
+                    exit(-1);
+                }
+                command_line.depend_on[command_line.depend_on_size++] = atoi(optarg);
                 break;
             case 'U':
                 command_line.request = c_SWAP_JOBS;
@@ -271,7 +281,7 @@ void parse_opts(int argc, char **argv)
 
     command_line.command.num = 0;
 
-    /* if the request is still the default option... 
+    /* if the request is still the default option...
      * (the default values should be centralized) */
     if (optind < argc && command_line.request == c_LIST)
     {

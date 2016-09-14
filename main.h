@@ -4,6 +4,11 @@
 
     Please find the license in the provided COPYING file.
 */
+
+#ifndef MAX_DEPEND_ON_SIZE
+#define MAX_DEPEND_ON_SIZE 20
+#endif
+
 enum
 {
     CMD_LEN=500,
@@ -77,7 +82,8 @@ struct Command_line {
     int send_output_by_mail;
     int gzip;
     int do_depend;
-    int depend_on; /* -1 means depend on previous */
+    int depend_on_size;
+    int depend_on[MAX_DEPEND_ON_SIZE]; /* -1 means depend on previous */
     int max_slots; /* How many jobs to run at once */
     int jobid; /* When queuing a job, main.c will fill it automatically from
                   the server answer to NEWJOB */
@@ -125,7 +131,8 @@ struct msg
             int label_size;
             int env_size;
             int do_depend;
-            int depend_on; /* -1 means depend on previous */
+            int depend_on_size;
+            int depend_on[MAX_DEPEND_ON_SIZE]; /* -1 means depend on previous */
             int wait_enqueuing;
             int num_slots;
         } newjob;
@@ -178,7 +185,8 @@ struct Job
     int pid;
     int should_keep_finished;
     int do_depend;
-    int depend_on;
+    int depend_on_size;
+    int depend_on[MAX_DEPEND_ON_SIZE];
     int *notify_errorlevel_to;
     int notify_errorlevel_to_size;
     int dependency_errorlevel;
