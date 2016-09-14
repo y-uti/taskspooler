@@ -1,6 +1,7 @@
 Overview
 ------------------------
 This is a fork from Task Spooler (version 0.7.6) which is distributed under GPL 2.0.
+http://vicerveza.homeunix.net/~viric/soft/ts/
 
 This fork contains a PoC implementation that jobs can accept many -D options.
 
